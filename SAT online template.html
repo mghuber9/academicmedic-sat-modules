@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAT Math Module 2 Grader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .content-wrapper {
+            display: flex;
+            height: calc(100vh - 4rem);
+        }
+        .text-panel {
+            width: 20%;
+            border-right: 1px solid #ccc;
+            padding: 1rem;
+            overflow-y: auto;
+            background-color: #fff;
+        }
+        .question-panel {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            background-color: #fff;
+        }
+        .timer {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .question-option {
+            margin-bottom: 0.5rem;
+        }
+        .navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #f0f0f0;
+            padding: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .incorrect { color: red; font-weight: bold; }
+        .correct { color: green; font-weight: bold; }
+        .not-marked { color: orange; font-weight: bold; }
+        .student-response { margin-top: 0.5rem; }
+        .score-display { font-size: 1.5rem; font-weight: bold; margin-top: 1rem; text-align: center; }
+        .bg-blue-800 { background-color: #1e40af; }
+        .bg-blue-900 { background-color: #1e3a8a; }
+        .text-white { color: #fff; }
+        .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .rounded { border-radius: 0.25rem; }
+        .bg-gray-200 { background-color: #e5e7eb; }
+        .bg-blue-500 { background-color: #3b82f6; }
+        .mr-2 { margin-right: 0.5rem; }
+        .ml-2 { margin-left: 0.5rem; }
+        .text-lg { font-size: 1.125rem; }
+        .font-semibold { font-weight: 600; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .flex { display: flex; }
+        .justify-between { justify-content: space-between; }
+        .items-center { align-items: center; }
+        .text-center { text-align: center; }
+    
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 80%;
+    max-height: 80%;
+    overflow: auto;
+    position: relative;
+}
+.modal-content img {
+    width: 100%;
+    height: auto;
+}
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+}
+.question-link {
+    display: block;
+    margin-bottom: 0.5rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.incorrect { color: red; font-weight: bold; }
+.correct { color: green; font-weight: bold; }
+.not-marked { color: orange; font-weight: bold; }
+</style>
+</head>
+<body>
+    <div class="relative">
+        <div class="bg-blue-800 text-white p-2 flex justify-between items-center">
+            <span>SAT 2 Math Module 1</span>
+            <span id="timeDisplay">0:00</span>
+        </div>
+        <div class="bg-blue-900 text-white p-2 text-center">SAT 2 Math Module 1</div>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="text-panel" id="textPanel"></div>
+        <div class="question-panel" id="questionPanel">
+            <div class="flex justify-between items-center mb-4">
+
+<button class="bg-gray-200 px-2 py-1 rounded" onclick="openModal()">Reference</button>
+
+                <button class="bg-gray-200 px-2 py-1 rounded" id="markForReview" onclick="markForReview()">Mark for Review</button>
+                <span class="text-lg font-semibold" id="questionNumber"></span>
+            </div>
+            <div id="questionOptions"></div>
+            <div id="result" class="mt-4"></div>
+            <div id="questionProgress" class="text-center mt-2"></div>
+        </div>
+    </div>
+    <div class="navigation">
+        <span>Student Name</span>
+        <div class="flex items-center">
+            <button class="bg-blue-500 text-white px-4 py-2 rounded mr-2" onclick="prevQuestion()">Back</button>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded" onclick="nextQuestion()">Next</button>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded ml-2" onclick="submitTest()">Submit Test</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+    {
+        "id": 1,
+        "text": "What is 10% of 470?",
+        "options": [
+            "A) 37",
+            "B) 47",
+            "C) 423",
+            "D) 460"
+        ],
+        "correct": "B",
+        "type": "multiple"
+    },
+    {
+        "id": 2,
+        "text": "The function g(x) = x^2 + 9. For which value of x is g(x) = 25?",
+        "options": [
+            "A) 4",
+            "B) 5",
+            "C) 9",
+            "D) 13"
+        ],
+        "correct": "B",
+        "type": "multiple"
+    },
+    {
+        "id": 3,
+        "text": "4x + 6 = 18. Which equation has the same solution?",
+        "options": [
+            "A) 4x = 108",
+            "B) 4x = 24",
+            "C) 4x = 12",
+            "D) 4x = 3"
+        ],
+        "correct": "C",
+        "type": "multiple"
+    },
+    {
+        "id": 4,
+        "text": "Each face of a 14-sided die is labeled 1 through 14. What is the probability of rolling a 2?",
+        "options": [
+            "A) 1/14",
+            "B) 2/14",
+            "C) 13/14",
+            "D) 12/14"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 5,
+        "text": "A surfboard rental costs $25 plus $10 per hour. You want to spend at most $75. Let t be hours. Which inequality represents this?",
+        "options": [
+            "A) 10t < 75",
+            "B) 10 + 25t < 75",
+            "C) 25t < 75",
+            "D) 25 + 10t < 75"
+        ],
+        "correct": "D",
+        "type": "multiple"
+    },
+    {
+        "id": 6,
+        "text": "A printer produces 42 posters per minute. What is the rate in posters per hour?",
+        "options": [
+            "A) 2,420",
+            "B) 2,520",
+            "C) 3,120",
+            "D) 2,400"
+        ],
+        "correct": "B",
+        "type": "multiple"
+    },
+    {
+        "id": 7,
+        "text": "The function f(x) = 7x + 2. What is the value of f(4)?",
+        "options": [
+            "A) 1",
+            "B) 5",
+            "C) 15",
+            "D) 30"
+        ],
+        "correct": "D",
+        "type": "multiple"
+    },
+    {
+        "id": 8,
+        "text": "Solve the system: y = -3x and 4x + y = 15. What is the value of x?",
+        "options": [
+            "A) 1",
+            "B) 5",
+            "C) 3",
+            "D) 4"
+        ],
+        "correct": "B",
+        "type": "multiple"
+    },
+    {
+        "id": 9,
+        "text": "A 70-point assignment has 1-point and 3-point questions. Let x = 1-point and y = 3-point. Which equation models this?",
+        "options": [
+            "A) 4xy = 70",
+            "B) 4(x+y) = 70",
+            "C) 3x + y = 70",
+            "D) x + 3y = 70"
+        ],
+        "correct": "D",
+        "type": "multiple"
+    },
+    {
+        "id": 10,
+        "text": "Right triangles LMN and PQR are similar. \u2220M = 53\u00b0. What is the measure of \u2220Q?",
+        "options": [
+            "A) 37\u00b0",
+            "B) 53\u00b0",
+            "C) 127\u00b0",
+            "D) 90\u00b0"
+        ],
+        "correct": "B",
+        "type": "multiple"
+    },
+    {
+        "id": 11,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 11.",
+        "options": [
+            "A) Option A11",
+            "B) Option B11",
+            "C) Option C11",
+            "D) Option D11"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 12,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 12.",
+        "options": [
+            "A) Option A12",
+            "B) Option B12",
+            "C) Option C12",
+            "D) Option D12"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 13,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 13.",
+        "options": [
+            "A) Option A13",
+            "B) Option B13",
+            "C) Option C13",
+            "D) Option D13"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 14,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 14.",
+        "options": [
+            "A) Option A14",
+            "B) Option B14",
+            "C) Option C14",
+            "D) Option D14"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 15,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 15.",
+        "options": [
+            "A) Option A15",
+            "B) Option B15",
+            "C) Option C15",
+            "D) Option D15"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 16,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 16.",
+        "options": [
+            "A) Option A16",
+            "B) Option B16",
+            "C) Option C16",
+            "D) Option D16"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 17,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 17.",
+        "options": [
+            "A) Option A17",
+            "B) Option B17",
+            "C) Option C17",
+            "D) Option D17"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 18,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 18.",
+        "options": [
+            "A) Option A18",
+            "B) Option B18",
+            "C) Option C18",
+            "D) Option D18"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 19,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 19.",
+        "options": [
+            "A) Option A19",
+            "B) Option B19",
+            "C) Option C19",
+            "D) Option D19"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 20,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 20.",
+        "options": [
+            "A) Option A20",
+            "B) Option B20",
+            "C) Option C20",
+            "D) Option D20"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 21,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 21.",
+        "options": [
+            "A) Option A21",
+            "B) Option B21",
+            "C) Option C21",
+            "D) Option D21"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 22,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 22.",
+        "options": [
+            "A) Option A22",
+            "B) Option B22",
+            "C) Option C22",
+            "D) Option D22"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 23,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 23.",
+        "options": [
+            "A) Option A23",
+            "B) Option B23",
+            "C) Option C23",
+            "D) Option D23"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 24,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 24.",
+        "options": [
+            "A) Option A24",
+            "B) Option B24",
+            "C) Option C24",
+            "D) Option D24"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 25,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 25.",
+        "options": [
+            "A) Option A25",
+            "B) Option B25",
+            "C) Option C25",
+            "D) Option D25"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 26,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 26.",
+        "options": [
+            "A) Option A26",
+            "B) Option B26",
+            "C) Option C26",
+            "D) Option D26"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    },
+    {
+        "id": 27,
+        "text": "Placeholder for SAT Math Module 1 \u2013 Question 27.",
+        "options": [
+            "A) Option A27",
+            "B) Option B27",
+            "C) Option C27",
+            "D) Option D27"
+        ],
+        "correct": "A",
+        "type": "multiple"
+    }
+];
+
+        let currentQuestionIndex = -1;
+        let answers = new Array(questions.length).fill(null);
+        let reviewedQuestions = new Array(questions.length).fill(false);
+        let isTestSubmitted = false;
+        let finalScore = '';
+
+        function parseAnswer(answer) {
+            if (!answer) return NaN;
+            answer = answer.trim();
+            if (answer.includes('/')) {
+                const [numerator, denominator] = answer.split('/').map(num => parseFloat(num));
+                if (denominator && !isNaN(numerator) && !isNaN(denominator)) {
+                    return (numerator / denominator);
+                }
+            }
+            return parseFloat(answer);
+        }
+
+        function displayQuestion(index) {
+            currentQuestionIndex = index;
+            const q = questions[index];
+            const questionOptions = document.querySelector('#questionOptions');
+            const questionNumber = document.querySelector('#questionNumber');
+            const questionProgress = document.querySelector('#questionProgress');
+            const result = document.querySelector('#result');
+
+            questionNumber.textContent = q ? `${q.id} ⬤` : '';
+            questionProgress.textContent = q ? `Question ${q.id} of ${questions.length}` : '';
+
+            if (isTestSubmitted) {
+                result.innerHTML = finalScore;
+            } else {
+                result.innerHTML = '';
+            }
+
+            if (!q) {
+                questionOptions.innerHTML = '<p>Please select a question from the left panel to begin.</p>';
+                return;
+            }
+
+            if (q.type === "multiple") {
+                let optionsHtml = q.options.map((opt, i) => `
+                    <div class="question-option">
+                        <input type="radio" name="q${q.id}" value="${opt.charAt(0)}" id="opt${i}" ${answers[index] === opt.charAt(0) ? 'checked' : ''} onchange="saveAnswer(${index}, this.value)">
+                        <label for="opt${i}" class="ml-2">${opt}</label>
+                    </div>
+                `).join('');
+                let questionHtml = `
+                    <h2 class="text-lg font-semibold">Question ${q.id}</h2>
+                    <p>${q.text.replace(/\n\n/g, '</p><p>')}</p>
+                `;
+                // Add image placeholder for questions with images
+                if ([1, 3, 4, 17, 19, 24, 25].includes(q.id)) {
+                    questionHtml += `<img src="placeholder-image-${q.id}.png" alt="Image for Question ${q.id}" style="max-width: 100%; height: auto;">`;
+                }
+                questionHtml += `${optionsHtml}`;
+                questionOptions.innerHTML = questionHtml;
+            } else if (q.type === "spr") {
+                questionOptions.innerHTML = `
+                    <h2 class="text-lg font-semibold">Question ${q.id}</h2>
+                    <p>${q.text.replace(/\n\n/g, '</p><p>')}</p>
+                    <div class="student-response">
+                        <input type="text" id="sprInput" value="${answers[index] || ''}" placeholder="Enter your answer" oninput="saveAnswer(${index}, this.value)">
+                    </div>
+                `;
+            }
+        }
+
+        function updateQuestionList() {
+            const textPanel = document.querySelector('#textPanel');
+            let html = '<h2>Questions</h2>';
+            for (let i = 0; i < questions.length; i++) {
+                const q = questions[i];
+                let className = 'question-link';
+                let status = '';
+                if (isTestSubmitted && answers[i] !== null) {
+                    const userAnswer = parseAnswer(answers[i]);
+                    const correctAnswer = parseAnswer(q.correct);
+                    const isCorrect = q.type === "multiple" ? answers[i].toString().trim() === q.correct.toString().trim() : (q.type === "spr" && q.correct.includes(',')) ? answers[i].toString().trim() === q.correct.toString().trim() : !isNaN(userAnswer) && !isNaN(correctAnswer) && Math.abs(userAnswer - correctAnswer) < 0.0001;
+                    if (isCorrect) {
+                        status = '(Correct)';
+                        className += ' correct';
+                    } else if (reviewedQuestions[i]) {
+                        status = '(Not Marked)';
+                        className += ' not-marked';
+                    } else {
+                        status = '(Incorrect)';
+                        className += ' incorrect';
+                    }
+                } else if (!isTestSubmitted && reviewedQuestions[i]) {
+                    status = '(Marked for Review)';
+                    className += ' not-marked';
+                }
+                html += `<div class="${className}" onclick="goToQuestion(${i})">Question ${q.id} ${status}</div>`;
+            }
+            textPanel.innerHTML = html;
+        }
+
+        function saveAnswer(index, value) {
+            answers[index] = value;
+            updateQuestionList();
+        }
+
+        function goToQuestion(index) {
+            displayQuestion(index);
+            if (isTestSubmitted && answers[index] !== null) {
+                const q = questions[index];
+                const userAnswer = parseAnswer(answers[index]);
+                const correctAnswer = parseAnswer(q.correct);
+                const isCorrect = q.type === "multiple" ? answers[index].toString().trim() === q.correct.toString().trim() : (q.type === "spr" && q.correct.includes(',')) ? answers[i].toString().trim() === q.correct.toString().trim() : !isNaN(userAnswer) && !isNaN(correctAnswer) && Math.abs(userAnswer - correctAnswer) < 0.0001;
+                if (!isCorrect) {
+                    reviewedQuestions[index] = true;
+                    updateQuestionList();
+                }
+            }
+        }
+
+        function markForReview() {
+            if (currentQuestionIndex >= 0 && !isTestSubmitted) {
+                reviewedQuestions[currentQuestionIndex] = !reviewedQuestions[currentQuestionIndex];
+                updateQuestionList();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1 && currentQuestionIndex >= 0) {
+                goToQuestion(currentQuestionIndex + 1);
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                goToQuestion(currentQuestionIndex - 1);
+            }
+        }
+
+        function submitTest() {
+            if (isTestSubmitted) return;
+            let correctCount = 0;
+            for (let i = 0; i < questions.length; i++) {
+                if (answers[i] !== null) {
+                    const q = questions[i];
+                    const userAnswer = parseAnswer(answers[i]);
+                    const correctAnswer = parseAnswer(q.correct);
+                    const isCorrect = q.type === "multiple" ? answers[i].toString().trim() === q.correct.toString().trim() : (q.type === "spr" && q.correct.includes(',')) ? answers[i].toString().trim() === q.correct.toString().trim() : !isNaN(userAnswer) && !isNaN(correctAnswer) && Math.abs(userAnswer - correctAnswer) < 0.0001;
+                    if (isCorrect) correctCount++;
+                }
+            }
+            finalScore = `<div class="score-display">Total Score: ${correctCount} out of ${questions.length}</div>`;
+            const result = document.querySelector('#result');
+            result.innerHTML = finalScore;
+            isTestSubmitted = true;
+            updateQuestionList();
+            document.querySelectorAll('input[type="radio"], input[type="text"]').forEach(el => el.disabled = true);
+            document.querySelector('#markForReview').disabled = true;
+            document.querySelectorAll('button:not([onclick="openModal()"], [onclick="closeReferenceModal()"])').forEach(btn => btn.disabled = true);
+        }
+
+        let timeLeft = 1500; // 25 minutes in seconds
+        const timerDisplay = document.querySelector('#timeDisplay');
+
+        function startTimer() {
+            const timer = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    submitTest();
+                } else {
+                    timeLeft--;
+                }
+            }, 1000);
+        }
+
+        // Debug: Check if script runs
+        console.log("Script loaded, initializing...");
+        updateQuestionList(); // Ensure question list is populated on load
+        displayQuestion(0); // Start with the first question
+        startTimer();
+    
+function openModal() {
+    document.getElementById('referenceModal').style.display = 'flex';
+}
+function closeReferenceModal() {
+    document.getElementById('referenceModal').style.display = 'none';
+}
+window.onclick = function(event) {
+    const modal = document.getElementById('referenceModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
+
+</script>
+
+<div id="referenceModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeReferenceModal()">×</span>
+        <img src="https://i.imgur.com/IMAGE_ID.jpg" alt="Reference Image">
+    </div>
+</div>
+
+</body>
+</html>
