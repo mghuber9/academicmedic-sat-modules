@@ -194,8 +194,9 @@ function parseAnswer(answer) {
             const questionProgress = document.querySelector('#questionProgress');
             const result = document.querySelector('#result');
 
-            questionNumber.textContent = q ? `${q.id} ⬤` : '';
-            questionProgress.textContent = q ? `Question ${q.id} of ${questions.length}` : '';
+            questionNumber.textContent = q ? `Question ${index + 1}` : '';
+questionProgress.textContent = q ? `Question ${index + 1} of ${questions.length}` : '';
+
 
             if (isTestSubmitted) {
                 result.innerHTML = finalScore;
@@ -275,7 +276,10 @@ let optionsHtml = optionsList.map((opt, i) => `
                     status = '(Marked for Review)';
                     className += ' not-marked';
                 }
-                html += `<div class="${className}" onclick="goToQuestion(${i})">Question ${q.id} ${status}</div>`;
+                html += `<div class="${className}" onclick="goToQuestion(${i})">
+  Question ${i + 1} ${status}
+</div>`;
+
             }
             textPanel.innerHTML = html;
         }
