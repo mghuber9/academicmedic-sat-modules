@@ -347,9 +347,23 @@ function parseAnswer(answer) {
 
         // Debug: Check if script runs
         console.log("Script loaded, initializing...");
-        updateQuestionList(); // Ensure question list is populated on load
-        displayQuestion(0); // Start with the first question
-        startTimer();
+        console.log("Script loaded, initializing...");
+(async () => {
+  try {
+    await loadModuleQuestions();
+    updateQuestionList();
+    displayQuestion(0);
+    startTimer();
+  } catch (err) {
+    console.error(err);
+    document.querySelector('#questionOptions').innerHTML = `
+      <p style="color:#b91c1c;font-weight:bold;">Could not load module file.</p>
+      <p>${err.message}</p>
+      <p>Expected at: <code>${MODULE_URL}</code></p>
+    `;
+  }
+})();
+
     
 function openModal() {
     document.getElementById('referenceModal').style.display = 'flex';
