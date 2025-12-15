@@ -231,20 +231,16 @@ let optionsHtml = optionsList.map((opt, i) => `
                 let questionHtml = `
                     <h2 class="text-lg font-semibold">Question ${index + 1}</h2>
                     <p>${(q.text||'').replace(/\n\n/g, '</p><p>')}</p>
-                    ${q.promptImage ? `<img src="${q.promptImage}" alt="Question ${q.id}" style="max-width:100%;height:auto;display:block;margin:12px 0;">` : ''}
+                    ${q.promptImage ? `<img src="${q.promptImage}" alt="Question ${index + 1}" style="max-width:100%;height:auto;display:block;margin:12px 0;">` : ''}
                 `;
                 // Add image placeholder for questions with images
-                if ([1, 3, 4, 17, 19, 24, 25].includes(q.id)) {
-                    questionHtml += `<img src="placeholder-image-${q.id}.png" alt="Image for Question ${q.id}" style="max-width: 100%; height: auto;">`;
-                }
                 questionHtml += `${optionsHtml}`;
                 questionOptions.innerHTML = questionHtml;
             } else if (q.type === "spr") {
                 questionOptions.innerHTML = `
                     <h2 class="text-lg font-semibold">Question ${index + 1}</h2>
-                    <p style="font-size:0.8em;color:#666;margin-top:-8px;">ID: ${q.id}</p>
                     <p>${(q.text||'').replace(/\n\n/g, '</p><p>')}</p>
-                    ${q.promptImage ? `<img src="${q.promptImage}" alt="Question ${q.id}" style="max-width:100%;height:auto;display:block;margin:12px 0;">` : ''}
+                    ${q.promptImage ? `<img src="${q.promptImage}" alt="Question ${index + 1}" style="max-width:100%;height:auto;display:block;margin:12px 0;">` : ''}
                     <div class="student-response">
                         <input type="text" id="sprInput" value="${answers[index] || ''}" placeholder="Enter your answer" oninput="saveAnswer(${index}, this.value)">
                     </div>
