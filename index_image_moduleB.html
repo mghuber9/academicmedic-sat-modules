@@ -209,12 +209,24 @@ function parseAnswer(answer) {
             }
 
             if (q.type === "multiple") {
-                let optionsHtml = q.options.map((opt, i) => `
-                    <div class="question-option">
-                        <input type="radio" name="q${q.id}" value="${opt.charAt(0)}" id="opt${i}" ${answers[index] === opt.charAt(0) ? 'checked' : ''} onchange="saveAnswer(${index}, this.value)">
-                        <label for="opt${i}" class="ml-2">${opt}</label>
-                    </div>
-                `).join('');
+                let optionsList = (Array.isArray(q.options) && q.options.length)
+  ? q.options
+  : ["A) A", "B) B", "C) C", "D) D"];
+
+let optionsHtml = optionsList.map((opt, i) => `
+    <div class="question-option">
+        <input
+            type="radio"
+            name="q${q.id}"
+            value="${opt.charAt(0)}"
+            id="opt${q.id}_${i}"
+            ${answers[index] === opt.charAt(0) ? 'checked' : ''}
+            onchange="saveAnswer(${index}, this.value)"
+        >
+        <label for="opt${q.id}_${i}" class="ml-2">${opt}</label>
+    </div>
+`).join('');
+
                 let questionHtml = `
                     <h2 class="text-lg font-semibold">Question ${q.id}</h2>
                     <p>${(q.text||'').replace(/\n\n/g, '</p><p>')}</p>
