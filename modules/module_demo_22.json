@@ -1,0 +1,200 @@
+[
+  {
+    "id": "60f71697",
+    "type": "multiple",
+    "correct": "A",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/60f71697_q.png"
+  },
+  {
+    "id": "097e10f5",
+    "type": "multiple",
+    "correct": "A",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/097e10f5_q.png"
+  },
+  {
+    "id": "0adbe034",
+    "type": "multiple",
+    "correct": "C",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/0adbe034_q.png"
+  },
+  {
+    "id": "e7b6f0d1",
+    "type": "multiple",
+    "correct": "C",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/e7b6f0d1_q.png"
+  },
+  {
+    "id": "51aabd93",
+    "type": "multiple",
+    "correct": "A",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/51aabd93_q.png"
+  },
+  {
+    "id": "05417146",
+    "type": "multiple",
+    "correct": "B",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/05417146_q.png"
+  },
+  {
+    "id": "8339793c",
+    "type": "spr",
+    "correct": "10",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/8339793c_q.png"
+  },
+  {
+    "id": "9b886541",
+    "type": "multiple",
+    "correct": "D",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/9b886541_q.png"
+  },
+  {
+    "id": "ed18c4f7",
+    "type": "multiple",
+    "correct": "D",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/ed18c4f7_q.png"
+  },
+  {
+    "id": "7392dfc1",
+    "type": "multiple",
+    "correct": "D",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/7392dfc1_q.png"
+  },
+  {
+    "id": "baca4a4c",
+    "type": "multiple",
+    "correct": "A",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/baca4a4c_q.png"
+  },
+  {
+    "id": "93954cfa",
+    "type": "multiple",
+    "correct": "A",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/93954cfa_q.png"
+  },
+  {
+    "id": "2f0a43b2",
+    "type": "spr",
+    "correct": ".2, 1/5",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/2f0a43b2_q.png"
+  },
+  {
+    "id": "fa80893a",
+    "type": "spr",
+    "correct": "17",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/fa80893a_q.png"
+  },
+  {
+    "id": "b4553284",
+    "type": "spr",
+    "correct": "54",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/b4553284_q.png"
+  },
+  {
+    "id": "6ac23de7",
+    "type": "multiple",
+    "correct": "A",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/6ac23de7_q.png"
+  },
+  {
+    "id": "4de87c9a",
+    "type": "multiple",
+    "correct": "D",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/4de87c9a_q.png"
+  },
+  {
+    "id": "0d685865",
+    "type": "multiple",
+    "correct": "C",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/0d685865_q.png"
+  },
+  {
+    "id": "550b352c",
+    "type": "multiple",
+    "correct": "B",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/550b352c_q.png"
+  },
+  {
+    "id": "349a5bc1",
+    "type": "spr",
+    "correct": "40",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/349a5bc1_q.png"
+  },
+  {
+    "id": "40ba6288",
+    "type": "multiple",
+    "correct": "B",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/40ba6288_q.png"
+  },
+  {
+    "id": "f305b5ca",
+    "type": "multiple",
+    "correct": "A",
+    "domain": "Algebra",
+    "skill": "Linear equations in one variable",
+    "difficulty": "Easy",
+    "promptImage": "banks/algebra_linear_eq_1var_easy_p01/images/f305b5ca_q.png"
+  }
+]
