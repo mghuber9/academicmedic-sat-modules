@@ -229,7 +229,7 @@ let optionsHtml = optionsList.map((opt, i) => `
 `).join('');
 
                 let questionHtml = `
-                    <h2 class="text-lg font-semibold">Question ${q.id}</h2>
+                    <h2 class="text-lg font-semibold">Question ${index + 1}</h2>
                     <p>${(q.text||'').replace(/\n\n/g, '</p><p>')}</p>
                     ${q.promptImage ? `<img src="${q.promptImage}" alt="Question ${q.id}" style="max-width:100%;height:auto;display:block;margin:12px 0;">` : ''}
                 `;
@@ -241,7 +241,8 @@ let optionsHtml = optionsList.map((opt, i) => `
                 questionOptions.innerHTML = questionHtml;
             } else if (q.type === "spr") {
                 questionOptions.innerHTML = `
-                    <h2 class="text-lg font-semibold">Question ${q.id}</h2>
+                    <h2 class="text-lg font-semibold">Question ${index + 1}</h2>
+                    <p style="font-size:0.8em;color:#666;margin-top:-8px;">ID: ${q.id}</p>
                     <p>${(q.text||'').replace(/\n\n/g, '</p><p>')}</p>
                     ${q.promptImage ? `<img src="${q.promptImage}" alt="Question ${q.id}" style="max-width:100%;height:auto;display:block;margin:12px 0;">` : ''}
                     <div class="student-response">
