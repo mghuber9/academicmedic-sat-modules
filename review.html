@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Review — Missed Questions</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;padding:0;background:#f0f0f0}
+    .topbar{background:#1e40af;color:#fff;padding:12px 16px;font-weight:bold;display:flex;justify-content:space-between;align-items:center}
+    .wrap{max-width:980px;margin:0 auto;padding:16px}
+    .card{background:#fff;border:1px solid #ddd;border-radius:8px;padding:14px;margin:12px 0}
+    .muted{color:#6b7280}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;margin-left:8px}
+    .bad{background:#fee2e2;color:#991b1b}
+    .ok{background:#dcfce7;color:#166534}
+    .btn{background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:10px 12px;cursor:pointer}
+    .btn2{background:#e5e7eb;color:#111827;border:none;border-radius:6px;padding:10px 12px;cursor:pointer}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    img{max-width:100%;height:auto;display:block;margin:10px 0}
+    .ans{margin-top:8px}
+    .ans strong{display:inline-block;width:140px}
+    code{background:#f3f4f6;padding:2px 6px;border-radius:4px}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div>Review — Missed Questions</div>
+    <div class="row">
+      <button class="btn2" onclick="window.location.href='index.html'">Back to test</button>
+      <button class="btn2" onclick="clearAttempt()">Clear saved attempt</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div id="summary" class="card"></div>
+    <div id="list"></div>
+  </div>
+
+<script>
+  function parseAnswer(answer) {
+    if (answer === null || answer === undefined) return NaN;
+    answer = String(answer).trim();
+    if (!answer) return NaN;
+    if (answer.includes('/')) {
+      const parts = answer.split('/');
+      if (parts.length === 2) {
+        const numerator = parseFloat(parts[0]);
+        const denominator = parseFloat(parts[1]);
+        if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
+          return numerator / denominator;
+        }
+      }
+    }
+    return parseFloat(answer);
+  }
+
+  // Mirrors your index.html correctness logic as closely as possible
+  function isCorrectAnswer(q, studentRaw) {
+    if (studentRaw === null || studentRaw === undefined) return false;
+
+    if (q.type === "multiple") {
+      return String(studentRaw).trim() === String(q.correct).trim();
+    }
+
+    if (q.type === "spr") {
+      // if correct includes comma, your scorer uses exact string match
+      if (String(q.correct).includes(',')) {
+        return String(studentRaw).trim() === String(q.correct).trim();
+      }
+      const userAnswer = parseAnswer(studentRaw);
+      const correctAnswer = parseAnswer(q.correct);
+      return !isNaN(userAnswer) && !isNaN(correctAnswer) && Math.abs(userAnswer - correctAnswer) < 0.0001;
+    }
+
+    // unknown types treated as incorrect
+    return false;
+  }
+
+  function loadAttempt() {
+    const raw = localStorage.getItem('am_last_attempt');
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch(e) { return null; }
+  }
+
+  async function getQuestionsFromAttempt(attempt) {
+    // Prefer the saved questions (fastest). If missing, fetch using modulePath.
+    if (Array.isArray(attempt.questions) && attempt.questions.length) return attempt.questions;
+
+    if (attempt.modulePath) {
+      const res = await fetch(attempt.modulePath, { cache: "no-store" });
+      if (!res.ok) throw new Error("Could not load module JSON: " + res.status);
+      const data = await res.json();
+      if (!Array.isArray(data)) throw new Error("Module JSON must be an array.");
+      return data;
+    }
+
+    throw new Error("No questions found and no modulePath to fetch.");
+  }
+
+  function renderSummary({total, missedCount, savedAt, modulePath}) {
+    const el = document.getElementById('summary');
+    el.innerHTML = `
+      <div><strong>Missed:</strong> ${missedCount} / ${total}</div>
+      <div class="muted" style="margin-top:6px;">
+        <div><strong>Saved:</strong> ${savedAt ? new Date(savedAt).toLocaleString() : 'Unknown'}</div>
+        <div><strong>Module:</strong> ${modulePath ? `<code>${modulePath}</code>` : 'Unknown'}</div>
+      </div>
+      <div class="muted" style="margin-top:10px;">
+        Note: “Missed” includes incorrect <em>and</em> unanswered questions.
+      </div>
+    `;
+  }
+
+  function renderMissedList(questions, answers) {
+    const list = document.getElementById('list');
+    list.innerHTML = "";
+
+    let missed = [];
+
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      const a = (Array.isArray(answers) ? answers[i] : answers?.[i]) ?? null;
+
+      const correct = isCorrectAnswer(q, a);
+      if (!correct) {
+        missed.push({ index: i, q, a });
+      }
+    }
+
+    if (missed.length === 0) {
+      list.innerHTML = `<div class="card"><span class="pill ok">All correct</span> Nothing to review.</div>`;
+      return { missedCount: 0 };
+    }
+
+    for (const item of missed) {
+      const { index, q, a } = item;
+      const studentDisplay = (a === null || a === undefined || String(a).trim() === "") ? "(No answer)" : String(a);
+      const correctDisplay = (q.correct === null || q.correct === undefined) ? "(No key)" : String(q.correct);
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div>
+            <strong>Question ${index + 1}</strong>
+            <span class="pill bad">Missed</span>
+          </div>
+          <div class="muted">${q.domain ? q.domain : ''}${q.skill ? ' • ' + q.skill : ''}${q.difficulty ? ' • ' + q.difficulty : ''}</div>
+        </div>
+
+        ${q.promptImage ? `<img src="${q.promptImage}" alt="Question ${index + 1}">` : ''}
+
+        <div class="ans"><strong>Your answer:</strong> <code>${escapeHtml(studentDisplay)}</code></div>
+        <div class="ans"><strong>Correct answer:</strong> <code>${escapeHtml(correctDisplay)}</code></div>
+      `;
+      list.appendChild(card);
+    }
+
+    return { missedCount: missed.length };
+  }
+
+  function escapeHtml(str){
+    return String(str)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function clearAttempt() {
+    localStorage.removeItem('am_last_attempt');
+    document.getElementById('summary').innerHTML = `<div><strong>Saved attempt cleared.</strong></div>`;
+    document.getElementById('list').innerHTML = "";
+  }
+
+  // make button work
+  window.clearAttempt = clearAttempt;
+
+  (async () => {
+    const attempt = loadAttempt();
+    if (!attempt) {
+      document.getElementById('summary').innerHTML = `
+        <div><strong>No saved attempt found.</strong></div>
+        <div class="muted" style="margin-top:6px;">Go back, take the test, and submit to create one.</div>
+      `;
+      return;
+    }
+
+    try {
+      const questions = await getQuestionsFromAttempt(attempt);
+      const answers = attempt.answers;
+
+      const { missedCount } = renderMissedList(questions, answers);
+      renderSummary({
+        total: questions.length,
+        missedCount,
+        savedAt: attempt.savedAt,
+        modulePath: attempt.modulePath
+      });
+    } catch (err) {
+      document.getElementById('summary').innerHTML = `
+        <div><strong>Could not load review.</strong></div>
+        <div class="muted" style="margin-top:6px;">${escapeHtml(err.message || String(err))}</div>
+      `;
+    }
+  })();
+</script>
+</body>
+</html>
