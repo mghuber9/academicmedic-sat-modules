@@ -333,7 +333,19 @@ let optionsHtml = optionsList.map((opt, i) => `
                     if (isCorrect) correctCount++;
                 }
             }
-            finalScore = `<div class="score-display">Total Score: ${correctCount} out of ${questions.length}</div>`;
+            finalScore = `
+  <div class="score-display">
+    Total Score: ${correctCount} out of ${questions.length}
+  </div>
+
+  <div class="text-center mt-4">
+    <button class="bg-blue-500 text-white px-4 py-2 rounded"
+      onclick="window.location.href='review.html'">
+      Review missed questions
+    </button>
+  </div>
+`;
+
 
 // ===== SAVE ATTEMPT FOR review.html =====
 try {
