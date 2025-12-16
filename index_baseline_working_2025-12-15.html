@@ -334,6 +334,24 @@ let optionsHtml = optionsList.map((opt, i) => `
                 }
             }
             finalScore = `<div class="score-display">Total Score: ${correctCount} out of ${questions.length}</div>`;
+
+// ===== SAVE ATTEMPT FOR review.html =====
+try {
+  const attempt = {
+    savedAt: new Date().toISOString(),
+    modulePath: MODULE_URL,
+    questions: questions,
+    answers: answers,
+    score: correctCount,
+    total: questions.length
+  };
+
+  localStorage.setItem('am_last_attempt', JSON.stringify(attempt));
+} catch (e) {
+  console.warn('Could not save attempt:', e);
+}
+
+            
             const result = document.querySelector('#result');
             result.innerHTML = finalScore;
             isTestSubmitted = true;
