@@ -53,16 +53,13 @@ let REVIEW_MODE = 'rework';
 function setMode(mode){
   REVIEW_MODE = (mode === 'reveal') ? 'reveal' : 'rework';
   updateModeBadge();
-  // ===== Rework Storage (Step 4B) =====
-// We store rework answers separately from original answers.
-// This persists across refresh, but is tied to the specific attempt.
-let ATTEMPT_KEY = null;          // set after loading attempt
-let REWORK_STATE = {
-  attemptKey: null,
-  reworkAnswers: null,           // array same length as questions
-  reworkSubmitted: false,
-  savedAt: null
-};
+
+  // Re-render the list based on the current mode
+  if (Array.isArray(window.__AM_questions) && window.__AM_questions.length) {
+    renderMissedList(window.__AM_questions, window.__AM_answers);
+  }
+}
+
 
 function getReworkStorageKey(){
   return 'am_last_attempt_rework';
@@ -366,6 +363,10 @@ initReworkForAttempt(questions.length);
 
       
       const answers = attempt.answers;
+
+window.__AM_questions = questions;
+window.__AM_answers = answers;
+      
 
       const { missedCount } = renderMissedList(questions, answers);
       renderSummary({
