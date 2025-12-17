@@ -244,7 +244,7 @@ let optionsHtml = optionsList.map((opt, i) => `
                     <p>${(q.text||'').replace(/\n\n/g, '</p><p>')}</p>
                     ${q.promptImage ? `<img src="${q.promptImage}" alt="Question ${index + 1}" style="max-width:100%;height:auto;display:block;margin:12px 0;">` : ''}
                     <div class="student-response">
-                        <input type="text" id="sprInput" value="${answers[i] || ''}" placeholder="Enter your answer" oninput="saveAnswer(${index}, this.value)">
+                        <input type="text" id="sprInput" value="${answers[index] || ''}" placeholder="Enter your answer" oninput="saveAnswer(${index}, this.value)">
                     </div>
                 `;
             }
@@ -284,13 +284,13 @@ let optionsHtml = optionsList.map((opt, i) => `
         }
 
         function saveAnswer(index, value) {
-            answers[i] = value;
+            answers[index] = value;
             updateQuestionList();
         }
 
         function goToQuestion(index) {
             displayQuestion(index);
-            if (isTestSubmitted && answers[i] !== null) {
+            if (isTestSubmitted && answers[index] !== null) {
                 const q = questions[index];
                 const userAnswer = parseAnswer(answers[i]);
                 const correctAnswer = parseAnswer(q.correct);
