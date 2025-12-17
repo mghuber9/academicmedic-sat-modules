@@ -304,8 +304,17 @@ function initReworkForAttempt(questionsLength){
 
         ${q.promptImage ? `<img src="${q.promptImage}" alt="Question ${index + 1}">` : ''}
 
-        <div class="ans"><strong>Your answer:</strong> <code>${escapeHtml(studentDisplay)}</code></div>
-        <div class="ans"><strong>Correct answer:</strong> <code>${escapeHtml(correctDisplay)}</code></div>
+        <div class="ans">
+  <strong>Original answer:</strong>
+  <code><s>${escapeHtml(studentDisplay)}</s></code>
+</div>
+
+${REVIEW_MODE === 'reveal' ? `
+  <div class="ans"><strong>Correct answer:</strong> <code>${escapeHtml(correctDisplay)}</code></div>
+` : `
+  <div class="ans muted"><strong>Correct answer:</strong> (hidden in Rework mode)</div>
+`}
+
       `;
       list.appendChild(card);
     }
