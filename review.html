@@ -54,8 +54,12 @@ function setMode(mode){
   REVIEW_MODE = (mode === 'reveal') ? 'reveal' : 'rework';
   updateModeBadge();
 
-  // Re-render the list based on the current mode
-  if (Array.isArray(window.__AM_questions) && window.__AM_questions.length) {
+  // Only re-render if the function exists and we have loaded questions
+  if (
+    typeof renderMissedList === 'function' &&
+    Array.isArray(window.__AM_questions) &&
+    window.__AM_questions.length
+  ) {
     renderMissedList(window.__AM_questions, window.__AM_answers);
   }
 }
@@ -349,32 +353,27 @@ ${REVIEW_MODE === 'reveal' ? `
     }
 
     try {
-      const questions = await getQuestionsFromAttempt(attempt);
+const questions = await getQuestionsFromAttempt(attempt);
 
-// Build an attempt key so rework answers don't accidentally apply to a different attempt
 ATTEMPT_KEY = `${attempt.savedAt || ''}|${attempt.modulePath || ''}`;
-
-// Initialize / load rework state for this attempt
 initReworkForAttempt(questions.length);
 
-// Optional: if rework was already submitted, default to reveal mode later
-// (We'll actually use this in Step 4F)
+const answers = attempt.answers;
 
-
-      
-      const answers = attempt.answers;
-
+// ✅ Store globally BEFORE first render
 window.__AM_questions = questions;
 window.__AM_answers = answers;
-      
 
-      const { missedCount } = renderMissedList(questions, answers);
-      renderSummary({
-        total: questions.length,
-        missedCount,
-        savedAt: attempt.savedAt,
-        modulePath: attempt.modulePath
-      });
+// ✅ First render
+const { missedCount } = renderMissedList(questions, answers);
+
+renderSummary({
+  total: questions.length,
+  missedCount,
+  savedAt: attempt.savedAt,
+  modulePath: attempt.modulePath
+});
+
     } catch (err) {
       document.getElementById('summary').innerHTML = `
         <div><strong>Could not load review.</strong></div>
