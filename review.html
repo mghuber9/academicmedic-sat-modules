@@ -240,6 +240,12 @@ function initReworkForAttempt(questionsLength){
       </div>
       <div class="muted" style="margin-top:10px;">
         Note: “Missed” includes incorrect <em>and</em> unanswered questions.
+
+        <div style="margin-top:12px;">
+  <button class="btn" onclick="submitRework()">Submit rework (show answers)</button>
+</div>
+
+        
       </div>
     `;
   }
@@ -362,6 +368,14 @@ function getReworkAnswer(qIndex){
 
   // make button work
   window.clearAttempt = clearAttempt;
+
+  function submitRework(){
+  REWORK_STATE.reworkSubmitted = true;
+  saveReworkState();
+  setMode('reveal');
+}
+window.submitRework = submitRework;
+
 
   (async () => {
     updateModeBadge();
