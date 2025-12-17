@@ -23,13 +23,21 @@
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <div>Review — Missed Questions</div>
-    <div class="row">
-      <button class="btn2" onclick="window.location.href='index.html'">Back to test</button>
-      <button class="btn2" onclick="clearAttempt()">Clear saved attempt</button>
-    </div>
+<div class="topbar">
+  <div>
+    Review
+    <span id="modeBadge" class="pill">Mode</span>
   </div>
+
+  <div class="row">
+    <button class="btn2" onclick="setMode('rework')">Rework mode</button>
+    <button class="btn2" onclick="setMode('reveal')">Reveal mode</button>
+
+    <button class="btn2" onclick="window.location.href='index.html'">Back to test</button>
+    <button class="btn2" onclick="clearAttempt()">Clear saved attempt</button>
+  </div>
+</div>
+
 
   <div class="wrap">
     <div id="summary" class="card"></div>
@@ -37,6 +45,30 @@
   </div>
 
 <script>
+  // ===== Review Mode State =====
+// rework: show original answer crossed out + allow rework input (NO correct answers)
+// reveal: show correct answers + explanations (we'll implement display in later steps)
+let REVIEW_MODE = 'rework';
+
+function setMode(mode){
+  REVIEW_MODE = (mode === 'reveal') ? 'reveal' : 'rework';
+  updateModeBadge();
+  // Re-render using existing attempt data (we’ll wire the full re-render in Step 4C/4D)
+  // For now, this just updates the badge so we know mode switching works.
+}
+
+function updateModeBadge(){
+  const badge = document.getElementById('modeBadge');
+  if (!badge) return;
+  if (REVIEW_MODE === 'reveal'){
+    badge.textContent = 'Reveal';
+    badge.className = 'pill ok';
+  } else {
+    badge.textContent = 'Rework';
+    badge.className = 'pill bad';
+  }
+}
+
   function parseAnswer(answer) {
     if (answer === null || answer === undefined) return NaN;
     answer = String(answer).trim();
@@ -178,6 +210,7 @@
   window.clearAttempt = clearAttempt;
 
   (async () => {
+    updateModeBadge();
     const attempt = loadAttempt();
     if (!attempt) {
       document.getElementById('summary').innerHTML = `
