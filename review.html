@@ -132,6 +132,65 @@ function updateModeBadge(){
   }
 }
 
+// ===== Rework Storage (Step 4B) =====
+let ATTEMPT_KEY = null;          // set after loading attempt
+let REWORK_STATE = {
+  attemptKey: null,
+  reworkAnswers: null,           // array same length as questions
+  reworkSubmitted: false,
+  savedAt: null
+};
+
+function getReworkStorageKey(){
+  return 'am_last_attempt_rework';
+}
+
+function loadReworkState(){
+  const raw = localStorage.getItem(getReworkStorageKey());
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch(e){ return null; }
+}
+
+function saveReworkState(){
+  try{
+    REWORK_STATE.savedAt = new Date().toISOString();
+    localStorage.setItem(getReworkStorageKey(), JSON.stringify(REWORK_STATE));
+  }catch(e){
+    console.warn('Could not save rework state:', e);
+  }
+}
+
+function initReworkForAttempt(questionsLength){
+  const existing = loadReworkState();
+
+  if (!existing || existing.attemptKey !== ATTEMPT_KEY){
+    REWORK_STATE = {
+      attemptKey: ATTEMPT_KEY,
+      reworkAnswers: new Array(questionsLength).fill(null),
+      reworkSubmitted: false,
+      savedAt: new Date().toISOString()
+    };
+    saveReworkState();
+    return;
+  }
+
+  REWORK_STATE = existing;
+
+  if (!Array.isArray(REWORK_STATE.reworkAnswers)){
+    REWORK_STATE.reworkAnswers = new Array(questionsLength).fill(null);
+  } else if (REWORK_STATE.reworkAnswers.length !== questionsLength){
+    const arr = new Array(questionsLength).fill(null);
+    for (let i = 0; i < Math.min(questionsLength, REWORK_STATE.reworkAnswers.length); i++){
+      arr[i] = REWORK_STATE.reworkAnswers[i];
+    }
+    REWORK_STATE.reworkAnswers = arr;
+  }
+
+  saveReworkState();
+}
+
+
+  
   function parseAnswer(answer) {
     if (answer === null || answer === undefined) return NaN;
     answer = String(answer).trim();
