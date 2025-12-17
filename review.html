@@ -39,6 +39,13 @@
   display: inline;
 }
 
+.rework-input{
+  font-size: 1em;
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  min-width: 220px;
+}
 
     
 
@@ -280,6 +287,32 @@ function initReworkForAttempt(questionsLength){
   <strong>❌ Original answer:</strong>
   <code class="orig-text inline">${escapeHtml(studentDisplay)}</code>
 </div>
+<div class="ans">
+  <strong>Rework answer:</strong>
+
+  ${q.type === 'spr' ? `
+    <input
+      type="text"
+      class="rework-input"
+      inputmode="decimal"
+      placeholder="Type your new answer…"
+      value="${escapeHtml(getReworkAnswer(index))}"
+      oninput="setReworkAnswer(${index}, this.value)"
+    />
+  ` : `
+    <select
+      class="rework-input"
+      onchange="setReworkAnswer(${index}, this.value)"
+    >
+      <option value="" ${getReworkAnswer(index)==='' ? 'selected' : ''}>(choose)</option>
+      <option value="A" ${getReworkAnswer(index)==='A' ? 'selected' : ''}>A</option>
+      <option value="B" ${getReworkAnswer(index)==='B' ? 'selected' : ''}>B</option>
+      <option value="C" ${getReworkAnswer(index)==='C' ? 'selected' : ''}>C</option>
+      <option value="D" ${getReworkAnswer(index)==='D' ? 'selected' : ''}>D</option>
+    </select>
+  `}
+</div>
+
 
 
 
@@ -296,6 +329,22 @@ ${REVIEW_MODE === 'reveal' ? `
     return { missedCount: missed.length };
   }
 
+function setReworkAnswer(qIndex, value){
+  if (!REWORK_STATE || !Array.isArray(REWORK_STATE.reworkAnswers)) return;
+  const v = (value === '' ? null : value);
+  REWORK_STATE.reworkAnswers[qIndex] = v;
+  saveReworkState();
+}
+
+function getReworkAnswer(qIndex){
+  if (!REWORK_STATE || !Array.isArray(REWORK_STATE.reworkAnswers)) return '';
+  const v = REWORK_STATE.reworkAnswers[qIndex];
+  return (v === null || v === undefined) ? '' : String(v);
+}
+
+
+
+  
   function escapeHtml(str){
     return String(str)
       .replaceAll("&","&amp;")
