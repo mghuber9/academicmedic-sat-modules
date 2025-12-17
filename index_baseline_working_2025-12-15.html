@@ -339,10 +339,11 @@ let optionsHtml = optionsList.map((opt, i) => `
   </div>
 
   <div class="text-center mt-4">
-    <button class="bg-blue-500 text-white px-4 py-2 rounded"
-      onclick="window.location.href='review.html'">
-      Review missed questions
-    </button>
+    <button id="reviewMissedBtn" class="bg-blue-500 text-white px-4 py-2 rounded"
+  onclick="window.location.href='review.html'">
+  Review missed questions
+</button>
+
   </div>
 `;
 
@@ -370,7 +371,10 @@ try {
             updateQuestionList();
             document.querySelectorAll('input[type="radio"], input[type="text"]').forEach(el => el.disabled = true);
             document.querySelector('#markForReview').disabled = true;
-            document.querySelectorAll('button:not([onclick="openModal()"], [onclick="closeReferenceModal()"])').forEach(btn => btn.disabled = true);
+            document.querySelectorAll(
+  'button:not([onclick="openModal()"]):not([onclick="closeReferenceModal()"]):not(#reviewMissedBtn)'
+).forEach(btn => btn.disabled = true);
+
         }
 
         let timeLeft = 1500; // 25 minutes in seconds
