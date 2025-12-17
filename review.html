@@ -20,6 +20,12 @@
     .ans{margin-top:8px}
     .ans strong{display:inline-block;width:140px}
     code{background:#f3f4f6;padding:2px 6px;border-radius:4px}
+    .original-answer .orig-text{
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #7f1d1d; /* dark red */
+}
+
   </style>
 </head>
 <body>
@@ -254,10 +260,11 @@ function initReworkForAttempt(questionsLength){
 
         ${q.promptImage ? `<img src="${q.promptImage}" alt="Question ${index + 1}">` : ''}
 
-        <div class="ans">
-  <strong>Original answer:</strong>
-  <code><s>${escapeHtml(studentDisplay)}</s></code>
+        <div class="ans original-answer">
+  <strong>❌ Original answer:</strong>
+  <code class="orig-text">${escapeHtml(studentDisplay)}</code>
 </div>
+
 
 ${REVIEW_MODE === 'reveal' ? `
   <div class="ans"><strong>Correct answer:</strong> <code>${escapeHtml(correctDisplay)}</code></div>
