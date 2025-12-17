@@ -65,61 +65,10 @@ function setMode(mode){
 }
 
 
-function getReworkStorageKey(){
-  return 'am_last_attempt_rework';
-}
-
-function loadReworkState(){
-  const raw = localStorage.getItem(getReworkStorageKey());
-  if (!raw) return null;
-  try { return JSON.parse(raw); } catch(e){ return null; }
-}
-
-function saveReworkState(){
-  try{
-    REWORK_STATE.savedAt = new Date().toISOString();
-    localStorage.setItem(getReworkStorageKey(), JSON.stringify(REWORK_STATE));
-  }catch(e){
-    console.warn('Could not save rework state:', e);
-  }
-}
-
-// Ensure we have a reworkAnswers array of the correct length, tied to this attempt
-function initReworkForAttempt(questionsLength){
-  const existing = loadReworkState();
-
-  // if no saved rework, create fresh
-  if (!existing || existing.attemptKey !== ATTEMPT_KEY){
-    REWORK_STATE = {
-      attemptKey: ATTEMPT_KEY,
-      reworkAnswers: new Array(questionsLength).fill(null),
-      reworkSubmitted: false,
-      savedAt: new Date().toISOString()
-    };
-    saveReworkState();
-    return;
-  }
-
-  // if saved rework matches this attempt, use it
-  REWORK_STATE = existing;
-
-  // safety: fix length if questions changed
-  if (!Array.isArray(REWORK_STATE.reworkAnswers)){
-    REWORK_STATE.reworkAnswers = new Array(questionsLength).fill(null);
-  } else if (REWORK_STATE.reworkAnswers.length !== questionsLength){
-    const arr = new Array(questionsLength).fill(null);
-    for (let i = 0; i < Math.min(questionsLength, REWORK_STATE.reworkAnswers.length); i++){
-      arr[i] = REWORK_STATE.reworkAnswers[i];
-    }
-    REWORK_STATE.reworkAnswers = arr;
-  }
-
-  saveReworkState();
-}
 
   // Re-render using existing attempt data (we’ll wire the full re-render in Step 4C/4D)
   // For now, this just updates the badge so we know mode switching works.
-}
+
 
 function updateModeBadge(){
   const badge = document.getElementById('modeBadge');
